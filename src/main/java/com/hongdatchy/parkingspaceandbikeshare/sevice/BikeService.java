@@ -6,11 +6,16 @@ package com.hongdatchy.parkingspaceandbikeshare.sevice;
 
 import com.hongdatchy.parkingspaceandbikeshare.entities.response.BikeInfo;
 
+import java.util.List;
+
 /**
  *
  *
  * @author hongdatchy
  */
 public interface BikeService {
-    BikeInfo getBikeInfoByBikeId(int bikeId);
+
+    BikeInfo findBikeInfoByBikeId(int bikeId);
+
+    List<BikeInfo> findAllBikeInfo();
 }

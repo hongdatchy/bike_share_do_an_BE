@@ -10,7 +10,7 @@ public class UserInterceptor implements ChannelInterceptor {
 
 
     /**
-     * hàm xác thực hành socket message từ android app
+     * hàm xác thực socket message từ android app
      * hiện tại có thể chưa cần tới nhưng trong tương lai nếu cần xác thực thì sẽ cần
      *
      * vì tác vụ của dự án nên hàm chỉ cho app giử 1 trong 3 loại bản tin CONNECT, SUBSCRIBE và DISCONNECT

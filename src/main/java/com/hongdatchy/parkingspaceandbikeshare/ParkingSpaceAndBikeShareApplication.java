@@ -8,11 +8,13 @@ import com.hongdatchy.parkingspaceandbikeshare.mqtt.MqttService;
 import com.hongdatchy.parkingspaceandbikeshare.repository.AdminRepository;
 import com.hongdatchy.parkingspaceandbikeshare.repository.UserRepository;
 import com.hongdatchy.parkingspaceandbikeshare.sevice.SendEmailService;
+import com.hongdatchy.parkingspaceandbikeshare.zDemoDevice.MqttServiceDemo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.TimeZone;
 
@@ -40,14 +42,26 @@ public class ParkingSpaceAndBikeShareApplication implements CommandLineRunner {
     @Autowired
     MqttService mqttService;
 
+    @Autowired
+    MqttServiceDemo mqttServiceDemo;
+
+    @Autowired
+    private SimpMessagingTemplate template;
+
     @Override
-    public void run(String... args) {
+    public void run(String... args) throws InterruptedException {
 
         //        set timezone cho backend
         TimeZone.setDefault(TimeZone.getTimeZone("GMT+7"));
-//        sendEmailService.sendMail("hongdatchy@gmail.com", "test", "cc");
-        //        server subscriber to mqtt broker
+
+        //        server subscriber to mqtt broker;
+        mqttServiceDemo.subscribeAll();
         mqttService.subscribeAll();
+
+//        while(true){
+//            template.convertAndSend("/topic/greetings", "hi");
+//            Thread.sleep(5000);
+//        }
     }
 
 }

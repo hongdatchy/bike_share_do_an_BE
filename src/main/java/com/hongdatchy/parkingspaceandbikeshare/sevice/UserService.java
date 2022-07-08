@@ -4,7 +4,9 @@
  */
 package com.hongdatchy.parkingspaceandbikeshare.sevice;
 
+import com.hongdatchy.parkingspaceandbikeshare.entities.model.ContractBike;
 import com.hongdatchy.parkingspaceandbikeshare.entities.request.RegisterForm;
+import com.hongdatchy.parkingspaceandbikeshare.entities.request.RentBikeRequest;
 
 /**
  *
@@ -30,4 +32,13 @@ public interface UserService {
      * ngược lại return false
      */
     boolean activeAccount(String code);
+
+    /**
+     * thự hiện xử lý hành động thuể xe
+     *
+     * @param rentBikeRequest nội dung bản tin thuê xe gửi lên từ client
+     * @param userId id cuả người thuê xe
+     * @return ContractBike nếu thuê thành công, null nếu thất bại
+     */
+    ContractBike rentBike(RentBikeRequest rentBikeRequest, int userId);
 }

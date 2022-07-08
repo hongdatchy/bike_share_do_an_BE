@@ -1,6 +1,9 @@
 package com.hongdatchy.parkingspaceandbikeshare.entities.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -8,6 +11,9 @@ import java.util.Date;
 @Data
 @Entity
 @Table(name = "contract_bike")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ContractBike {
 
     @Id

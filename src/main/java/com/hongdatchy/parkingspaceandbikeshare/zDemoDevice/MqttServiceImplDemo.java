@@ -1,7 +1,8 @@
-package com.hongdatchy.parkingspaceandbikeshare.mqtt;
+package com.hongdatchy.parkingspaceandbikeshare.zDemoDevice;
 
 
 import com.hongdatchy.parkingspaceandbikeshare.utils.Constant;
+import lombok.NonNull;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,14 +12,19 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 
 @Service
-public class MqttServiceImpl implements MqttService {
+public class MqttServiceImplDemo implements MqttServiceDemo {
     String broker = Constant.URL_BROKER_MQTT;
     String clientId = MqttAsyncClient.generateClientId();
     MqttClient client;
 
-    @Autowired
-    @Qualifier(value = "MqttCallBackImpl")
-    MqttCallback mqttCallback;
+//    @Autowired
+//
+//    MqttCallback mqttCallback;
+
+    private final MqttCallback mqttCallback;
+    public MqttServiceImplDemo(@Qualifier(value = "MqttCallBackImplDemo") @NonNull MqttCallback mqttCallback) {
+        this.mqttCallback = mqttCallback;
+    }
 
     @PostConstruct
     public void innit(){
@@ -38,11 +44,8 @@ public class MqttServiceImpl implements MqttService {
 
     @Override
     public void publish(int bikeId, String mess) {
-        String pubTopic = "downstream/"+ bikeId;
-        int qos = 2; // --> best
-//        QoS = 0 (at-most-once)
-//        QoS = 1 (at-least-one)
-//        QoS = 2 (Exactly-once)
+        String pubTopic = "upstream/"+ bikeId;
+        int qos = 2;
         MqttMessage message = new MqttMessage(mess.getBytes());
         message.setQos(qos);
         try {
@@ -54,7 +57,7 @@ public class MqttServiceImpl implements MqttService {
 
     @Override
     public void subscribe(int bikeId) {
-        String subTopic = "upstream/"+ bikeId;
+        String subTopic = "downstream/"+ bikeId;
 
         try {
             // set callback
@@ -68,7 +71,7 @@ public class MqttServiceImpl implements MqttService {
 
     @Override
     public void subscribeAll() {
-        String subTopic = "upstream/#";
+        String subTopic = "downstream/#";
 
         try {
             // set callback
@@ -79,4 +82,5 @@ public class MqttServiceImpl implements MqttService {
             e.printStackTrace();
         }
     }
+
 }

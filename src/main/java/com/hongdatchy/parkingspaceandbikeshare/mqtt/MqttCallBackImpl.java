@@ -6,6 +6,7 @@ import com.hongdatchy.parkingspaceandbikeshare.entities.model.Device;
 import com.hongdatchy.parkingspaceandbikeshare.repository.ContractBikeRepository;
 import com.hongdatchy.parkingspaceandbikeshare.repository.DeviceRepository;
 import com.hongdatchy.parkingspaceandbikeshare.sevice.PathService;
+import com.hongdatchy.parkingspaceandbikeshare.utils.Constant;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -13,15 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
-@Component
+@Component("MqttCallBackImpl")
 public class MqttCallBackImpl implements MqttCallback {
 
     @Autowired
@@ -36,73 +31,86 @@ public class MqttCallBackImpl implements MqttCallback {
     @Autowired
     private SimpMessagingTemplate template;
 
+    @Override
     public void connectionLost(Throwable cause) {
         System.out.println("disconnect");
     }
 
     /**
+     * nhận bản tin từ device gửi lên và xử lý
+     * có 2 loại bản tin:
+     * Loại 1: bản tin toạ độ và thời gian
+     *  update lat, long của device
+     *  update path nếu xe đang được thuể
+     * Loại 2: bản tin đóng khoá từ device gửi lên server
+     *
      *
      * @param topic topic
-     * @param message mqtt message (message from device to server)
-     *      update path and lat, long of device : p,HHmmss,lat,lon (position)
-     *      open device : cl (close)
+     * @param message mqtt message từ device gửi cho server
+     * ---- Loại 1----
+     * p,HHmmss,lat,lon
+     * ví dụ: p,20.333333,106.22221
+     *
+     * ---- Loại 2
+     * cl
+     *
      */
+    @Override
     public void messageArrived(String topic, MqttMessage message)  {
-        // The messages obtained after subscribe will be executed here
-        System.out.println("Received message topic:" + topic);
-//        System.out.println("Received message Qos:" + message.getQos());
-//        System.out.println("Received message content:" + new String(message.getPayload()));
+        System.out.println("Received message topic: " + topic);
+        System.out.println("Received message content: " + new String(message.getPayload()));
 
         String[] mess = new String(message.getPayload()).split(",");
-        System.out.println(Arrays.toString(mess));
+        // lấy bikeId từ topic
         String[] topicSplit = topic.split("/");
         int bikeId = Integer.parseInt(topicSplit[topicSplit.length-1]);
         try {
 
-            List<ContractBike> contracts = contractBikeRepository.findContractsBikeByUserId(bikeId);
-            if(mess[0].equals("p")) {
-                Device device = deviceRepository.findByBikeId(bikeId);
-                double latitude = Double.parseDouble(mess[2]);
-                double longitude = Double.parseDouble(mess[3]);
+            Device device = deviceRepository.findByBikeId(bikeId);
+            switch (mess[0]){
+                case "p":
+                    // lấy ra list contract của user này dựa vào
+                    List<ContractBike> contracts = contractBikeRepository.findContractsBikeByBikeId(bikeId);
+                    double latitude = Double.parseDouble(mess[1]);
+                    double longitude = Double.parseDouble(mess[2]);
 
-                if(device.getStatusLock()){ // true --> xe đang được thuê
-                    if(contracts.size() > 0){
-                        // update time end to contract
-                        ContractBike contract = contracts.get(contracts.size()-1);
-                        String timeGtm0 = mess[1];
-                        SimpleDateFormat f = new SimpleDateFormat("ddMMyyyyHHmmss");
-                        f.setTimeZone(TimeZone.getTimeZone("GMT+0"));
-                        // vì mqtt đang gửi lên gmt+0
-                        Date date = f.parse(new SimpleDateFormat("ddMMyyyy").format(new Date())+ timeGtm0);
-                        contract.setEndTime(new Timestamp(date.getTime()));
-                        contractBikeRepository.save(contract);
-
-                        // update path
-                        pathService.updatePathFormGPS(contract.getId(), bikeId, latitude, longitude);
+                    if(device.getStatusLock() == Constant.OPEN_STATUS_DEVICE){ // xe đang được thuê
+                        if(contracts.size() > 0){
+                            // get last contract
+                            ContractBike contract = contracts.get(contracts.size()-1);
+                            // update path
+                            pathService.updatePathFormGPS(contract.getId(), bikeId, latitude, longitude);
+                            template.convertAndSend("/topic/updateLatLong/" + bikeId,
+                                    latitude + "," + longitude);
+                        }
                     }
-                }
-                // luôn cập nhật cho device
-                device.setLatitude(latitude);
-                device.setLongitude(longitude);
-                deviceRepository.save(device);
-
-
-            } else if (mess[0].equals("cl")) {
-                Device device = deviceRepository.findByBikeId(bikeId);
-                if(device != null){
-                    device.setStatusLock(false);
+                    // luôn cập nhật cho device
+                    device.setLatitude(latitude);
+                    device.setLongitude(longitude);
                     deviceRepository.save(device);
-                }
+                    break;
+                case "cl":
+                    device.setStatusLock(Constant.CLOSE_STATUS_DEVICE);
+                    deviceRepository.save(device);
+                    // thông báo cho android đã hoàn thành chuyến đi
+                    template.convertAndSend("/topic/checkEndRenting/" + bikeId,
+                            "bạn có muốn kết thúc chuyến đi không");
+                case "op success":
+                    device.setStatusLock(Constant.OPEN_STATUS_DEVICE);
+                    deviceRepository.save(device);
 
-                // thông báo cho android hãy đóng khoá
-                template.convertAndSend("/topic/greetings/" + bikeId, "cl");
+                    // thông báo cho android đã hoàn thành chuyến đi
+                    template.convertAndSend("/topic/notifyRenting/" + bikeId,
+                            "Đã mở khoá xe thành công");
             }
-        } catch (ParseException | JsonProcessingException e){
+
+        } catch (JsonProcessingException e){
             e.printStackTrace();
         }
     }
 
+    @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
-        System.out.println("deliveryComplete---------" + token.isComplete());
+        System.out.println("deliveryComplete --------- " + token.isComplete());
     }
 }

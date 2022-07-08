@@ -15,6 +15,7 @@ public class Constant {
     public static final String TOKEN_SECRET = "hongdatchy";
     // thời gian hết hạn của token
     public static final long EXPIRATION_TIME = 86400000; // 1 day
+//    public static final long EXPIRATION_TIME = 60000; // 1 minute
     // chuỗi cộng thêm vào đầu plantext trước khi mã hoá
     public static final String TOKEN_PREFIX = "sanLab";
 
@@ -24,10 +25,19 @@ public class Constant {
     public static final String FEMALE_GENDER = "Nữ";
     public static final String OTHER_GENDER = "Khác";
 
-    public static final String HEADER_ACTIVE_MAIL = "Confirmation email account Bike share system activation";
+    public static final String HEADER_ACTIVE_MAIL = "Xác nhận email với tài khoản của hệ thống bike share";
 
-    public static final String REGISTER_RESULT_SUCCESS = "please check your email";
-    public static final String REGISTER_RESULT_FAIL_1 = "Gender is incorrect";
-    public static final String REGISTER_RESULT_FAIL_2 = "Email was existed";
-    public static final String REGISTER_RESULT_FAIL_3 = "Server send email fail";
+    public static final String REGISTER_RESULT_SUCCESS = "Xin hãy check email của bạn";
+    public static final String REGISTER_RESULT_FAIL_1 = "Giới tính không đúng";
+    public static final String REGISTER_RESULT_FAIL_2 = "Email đã tồn tại";
+    public static final String REGISTER_RESULT_FAIL_3 = "Email không đúng";
+
+    public static final String URL_BROKER_MQTT = "tcp://localhost:1883";
+    public static final String USERNAME_MQTT = "hongdatchy";
+    public static final String PASSWORD_MQTT = "hongdat10";
+
+    public static final boolean CLOSE_STATUS_DEVICE = false;
+    public static final boolean OPEN_STATUS_DEVICE = true;
+
+
 }

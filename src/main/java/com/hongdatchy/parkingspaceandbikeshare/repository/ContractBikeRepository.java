@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface ContractBikeRepository extends JpaRepository<ContractBike, Integer> {
-    List<ContractBike> findContractsBikeByUserId(int userId);
+    List<ContractBike> findContractsBikeByBikeId(int userId);
 
 }

@@ -43,21 +43,23 @@ public class SendEmailServiceImpl implements SendEmailService {
     @Override
     public boolean sendMailHtml(String userMail, String header, String activeCode, RegisterForm registerForm) {
         try {
+            System.out.println("sending email...");
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-            String htmlMsg =    "<h3>welcome to Parking Space and Bike Share system!</h3>" +
+            String htmlMsg =    "<h3>welcome to Bike Share system!</h3>" +
                     "<p>Someone registered a account in our system with this email. Info account: </p>" +
                     "<p>username: " + registerForm.getEmail() + "</p>"+
                     "<p>password: " + registerForm.getPassword() + "</p>"+
-                    "<p>please put this code in to my app to active your account: " + activeCode +"</p>";
+                    "<p>If that is you, please put this code in to Bike Share app to active your account: " + activeCode +"</p>";
             helper.setText(htmlMsg, true);
             helper.setTo(userMail);
             helper.setSubject(header);
             helper.setFrom(emailSender);
             javaMailSender.send(mimeMessage);
+            System.out.println("sending email success");
             return true;
         } catch (MailException | MessagingException ex) {
-            ex.printStackTrace();
+            System.out.println("sending email fail");
             return false;
         }
     }

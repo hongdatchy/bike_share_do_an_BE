@@ -6,6 +6,7 @@ package com.hongdatchy.parkingspaceandbikeshare.utils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -80,9 +81,18 @@ public class Common {
      * @return email sau khi đã giải mã hoá
      */
     public static String decodeToken(String token) {
-        return JWT.require(Algorithm.HMAC512(TOKEN_SECRET.getBytes()))
-                .build().verify(token.replace(TOKEN_PREFIX, ""))
-                .getSubject();
+        String email = null;
+        try{
+            if(!"".equals(token)){
+                email= JWT.require(Algorithm.HMAC512(TOKEN_SECRET.getBytes()))
+                        .build().verify(token.replace(TOKEN_PREFIX, ""))
+                        .getSubject();
+            }
+        }catch (JWTVerificationException e){
+            System.out.println("");
+        }
+
+        return email;
     }
 
     /**

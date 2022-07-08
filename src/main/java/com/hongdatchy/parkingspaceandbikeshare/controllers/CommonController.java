@@ -26,9 +26,12 @@ import org.springframework.web.bind.annotation.*;
  *
  * @author hongdatchy
  */
-@RequestMapping("api/common/")
+@RequestMapping("/api/common/")
 @RestController
 public class CommonController {
+
+    @Autowired
+    DeviceRepository deviceRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -98,10 +101,11 @@ public class CommonController {
         return ResponseEntity.ok(MyResponse.fail("username or password is incorrect"));
     }
 
-    @PostMapping("logout")
-    ResponseEntity<Object> logout(@RequestBody String token){
-        String email = Common.decodeToken(token);
+    @GetMapping("logout/{token}")
+    ResponseEntity<Object> logout(@PathVariable String token){
         boolean rs = false;
+        String email = Common.decodeToken(token);
+
         if(userRepository.findUserByEmail(email) != null
                 || adminRepository.findAdminByEmail(email) != null){
             blackListRepository.save(new BlackList(0, token));
@@ -112,7 +116,7 @@ public class CommonController {
 
     @PostMapping("register")
     public ResponseEntity<Object> register(@RequestBody RegisterForm registerForm) {
-
+        System.out.println(registerForm);
         String rsRegister = userService.register(registerForm);
         return rsRegister.equals(Constant.REGISTER_RESULT_SUCCESS) ?
                 ResponseEntity.ok(MyResponse.success(rsRegister)):
@@ -145,11 +149,35 @@ public class CommonController {
         return ResponseEntity.ok(MyResponse.success(stationRepository.findAll()));
     }
 
+
+
     @GetMapping("bike/{bikeId}")
     public ResponseEntity<Object> findBikeInfoByBikeId(@PathVariable int bikeId) {
-        BikeInfo bikeInfo = bikeService.getBikeInfoByBikeId(bikeId);
+        BikeInfo bikeInfo = bikeService.findBikeInfoByBikeId(bikeId);
         return ResponseEntity.ok(bikeInfo!= null ?
                 MyResponse.success(bikeInfo) :
                 MyResponse.fail("bikeId is incorrect"));
     }
+
+    @GetMapping("token/{token}")
+    public ResponseEntity<Object> checkLoginByToken(@PathVariable String token) {
+
+        boolean check = false;
+        if(blackListRepository.findBlackListByToken(token) == null){
+            String email = Common.decodeToken(token);
+            if(email!= null){
+                User user = userRepository.findUserByEmail(email);
+                Admin admin = adminRepository.findAdminByEmail(email);
+                if(user != null || admin != null){
+                    check = true;
+                }
+            }
+        }
+        return ResponseEntity.ok(check ?
+                MyResponse.success("token correct") :
+                MyResponse.fail("token incorrect"));
+    }
+
+
+
 }
