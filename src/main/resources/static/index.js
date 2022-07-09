@@ -57,9 +57,8 @@ async function loadAllBikeInfo(){
 
 let listBikeInfo
 
-loadAllBikeInfo().then(rs => {
-    listBikeInfo = rs
-    let listBikeInfoTrTag = rs.map((bikeInfo)=>{
+function render(){
+    let listBikeInfoTrTag = listBikeInfo.map((bikeInfo, index)=>{
         return `<tr class="bike_info">
                     <td>${bikeInfo.id}</td>
                     <td>${bikeInfo.deviceId}</td>
@@ -69,7 +68,7 @@ loadAllBikeInfo().then(rs => {
                     <td><div class="qrcode" style="width:100px; height:100px;"></div></td>
                     <td class="status_lock">${bikeInfo.statusLock ? `<img src="padlock_open.png" alt=""/>`: `<img src="padlock_lock.png" alt=""/>`}</td>
                     <td><button type="button" class="btn btn-primary" onclick="onClickPushLatLngByMQTTButton(${bikeInfo.id})">Đẩy toạ độ</button></td>
-                    <td><button type="button" class="btn btn-primary" onclick="onClickCloseLock(${bikeInfo.id})">Đóng khoá</button></td>
+                    <td><button type="button" class="btn btn-primary" onclick="onClickCloseLock(${bikeInfo.id}, ${index})">Đóng khoá</button></td>
                 </tr>`
     })
     listBikeInfoTrTag.unshift(`<tr>
@@ -82,10 +81,16 @@ loadAllBikeInfo().then(rs => {
                     <td>Status Lock</td>
                     <td>Device đẩy toạ độ bằng MQTT</td>
                     <td>Đóng khoá</td>
-                    
                 </tr>`)
     document.getElementById("list_bike_info").innerHTML = listBikeInfoTrTag.join('')
     createQR()
+
+}
+
+loadAllBikeInfo().then(rs => {
+    listBikeInfo = rs
+    render()
+}).then(() => {
     connectSocket()
 })
 
@@ -93,7 +98,9 @@ function onClickPushLatLngByMQTTButton(bikeId){
     fetchGet("http://localhost:8080/api/common/pushLatLngToServerByMqtt/" + bikeId, "", false).then(r => {})
 }
 
-function onClickCloseLock(bikeId){
+function onClickCloseLock(bikeId, index){
+    listBikeInfo[index].statusLock = false;
+    render()
     fetchGet("http://localhost:8080/api/common/closeLockToServerByMqtt/" + bikeId, "", false).then(r => {})
 }
 

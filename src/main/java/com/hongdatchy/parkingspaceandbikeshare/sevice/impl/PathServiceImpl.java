@@ -41,8 +41,8 @@ public class PathServiceImpl implements PathService {
     @Override
     public Path updatePathFormGPS(int contractId, int bikeId, double latitude, double longitude) {
 
-        List<Path> paths = pathRepository.findPathsByContractId(contractId);
-        if (paths.size()==0) {
+        Path path = pathRepository.findPathsByContractId(contractId);
+        if (path == null) {
             List<Coordinate> coordinates = new ArrayList<>();
             coordinates.add(new Coordinate(latitude, longitude));
             return pathRepository.save(Path.builder()
@@ -51,19 +51,16 @@ public class PathServiceImpl implements PathService {
                     .distance(0.0)
                     .routes(new Gson().toJson(coordinates))
                     .build());
-        } else if(paths.size()==1){
-            List<Coordinate> coordinates = new Gson().fromJson(paths.get(0).getRoutes(), new TypeToken<List<Coordinate>>(){}.getType());
+        } else {
+            List<Coordinate> coordinates = new Gson().fromJson(path.getRoutes(), new TypeToken<List<Coordinate>>(){}.getType());
             double latPre = coordinates.get(coordinates.size()-1).getLatitude();
             double longPre = coordinates.get(coordinates.size()-1).getLongitude();
             double addDistance = Common.calculateDistance(latPre , longPre , latitude , longitude);
-            paths.get(0).setDistance(paths.get(0).getDistance() + addDistance);
+            path.setDistance(path.getDistance() + addDistance);
             coordinates.add(new Coordinate(latitude, longitude));
-            paths.get(0).setRoutes(new Gson().toJson(coordinates));
-            return pathRepository.save(paths.get(0));
-        }else {
-            return null;
+            path.setRoutes(new Gson().toJson(coordinates));
+            return pathRepository.save(path);
         }
-
     }
 
 }

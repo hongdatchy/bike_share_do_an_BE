@@ -6,7 +6,7 @@ package com.hongdatchy.parkingspaceandbikeshare.controllers;
 
 import com.hongdatchy.parkingspaceandbikeshare.entities.model.ContractBike;
 import com.hongdatchy.parkingspaceandbikeshare.entities.request.RentBikeRequest;
-import com.hongdatchy.parkingspaceandbikeshare.entities.response.BikeInfo;
+import com.hongdatchy.parkingspaceandbikeshare.entities.response.ContractBikeResponse;
 import com.hongdatchy.parkingspaceandbikeshare.entities.response.MyResponse;
 import com.hongdatchy.parkingspaceandbikeshare.sevice.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +34,20 @@ public class  UserController {
      * @return contract nếu thành công
      */
     @PostMapping("rentBike")
-    public ResponseEntity<Object> findBikeInfoByBikeId(@RequestBody RentBikeRequest rentBikeRequest, @RequestAttribute Integer userId) {
-        System.out.println("rent");
+    public ResponseEntity<Object> rentBike(@RequestBody RentBikeRequest rentBikeRequest, @RequestAttribute Integer userId) {
+
         ContractBike contractBike = userService.rentBike(rentBikeRequest, userId);
         return ResponseEntity.ok(contractBike != null ?
-                MyResponse.success(contractBike) :
+                MyResponse.success("rent bike success") :
                 MyResponse.fail("rent bike fail"));
+    }
+
+    @PostMapping("endRentBike")
+    public ResponseEntity<Object> endRentBike(@RequestBody int bikeId,@RequestAttribute Integer userId) {
+        System.out.println("end rent");
+        ContractBikeResponse contractBikeResponse = userService.endRentBike(bikeId, userId);
+        return ResponseEntity.ok(contractBikeResponse != null ?
+                MyResponse.success(contractBikeResponse) :
+                MyResponse.fail("end rent bike fail"));
     }
 }

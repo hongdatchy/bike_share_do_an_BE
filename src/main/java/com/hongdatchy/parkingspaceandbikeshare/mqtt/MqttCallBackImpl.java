@@ -79,8 +79,9 @@ public class MqttCallBackImpl implements MqttCallback {
                             // get last contract
                             ContractBike contract = contracts.get(contracts.size()-1);
                             // update path
+
                             pathService.updatePathFormGPS(contract.getId(), bikeId, latitude, longitude);
-                            template.convertAndSend("/topic/updateLatLong/" + bikeId,
+                            template.convertAndSend("/topic/updateLatLongOrCheckEndRenting/" + bikeId,
                                     latitude + "," + longitude);
                         }
                     }
@@ -90,11 +91,14 @@ public class MqttCallBackImpl implements MqttCallback {
                     deviceRepository.save(device);
                     break;
                 case "cl":
+                    System.out.println(device);
                     device.setStatusLock(Constant.CLOSE_STATUS_DEVICE);
+                    System.out.println(device);
                     deviceRepository.save(device);
                     // thông báo cho android đã hoàn thành chuyến đi
-                    template.convertAndSend("/topic/checkEndRenting/" + bikeId,
-                            "bạn có muốn kết thúc chuyến đi không");
+                    template.convertAndSend("/topic/updateLatLongOrCheckEndRenting/" + bikeId,
+                            "Bạn có muốn kết thúc chuyến đi không");
+                    break;
                 case "op success":
                     device.setStatusLock(Constant.OPEN_STATUS_DEVICE);
                     deviceRepository.save(device);
@@ -102,6 +106,7 @@ public class MqttCallBackImpl implements MqttCallback {
                     // thông báo cho android đã hoàn thành chuyến đi
                     template.convertAndSend("/topic/notifyRenting/" + bikeId,
                             "Đã mở khoá xe thành công");
+                    break;
             }
 
         } catch (JsonProcessingException e){

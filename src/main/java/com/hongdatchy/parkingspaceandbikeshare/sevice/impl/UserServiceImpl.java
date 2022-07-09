@@ -4,26 +4,21 @@
  */
 package com.hongdatchy.parkingspaceandbikeshare.sevice.impl;
 
-import com.hongdatchy.parkingspaceandbikeshare.entities.model.Admin;
-import com.hongdatchy.parkingspaceandbikeshare.entities.model.ContractBike;
-import com.hongdatchy.parkingspaceandbikeshare.entities.model.Device;
-import com.hongdatchy.parkingspaceandbikeshare.entities.model.User;
+import com.hongdatchy.parkingspaceandbikeshare.entities.model.*;
 import com.hongdatchy.parkingspaceandbikeshare.entities.request.RegisterForm;
 import com.hongdatchy.parkingspaceandbikeshare.entities.request.RentBikeRequest;
+import com.hongdatchy.parkingspaceandbikeshare.entities.response.ContractBikeResponse;
 import com.hongdatchy.parkingspaceandbikeshare.mqtt.MqttService;
-import com.hongdatchy.parkingspaceandbikeshare.repository.AdminRepository;
-import com.hongdatchy.parkingspaceandbikeshare.repository.ContractBikeRepository;
-import com.hongdatchy.parkingspaceandbikeshare.repository.DeviceRepository;
-import com.hongdatchy.parkingspaceandbikeshare.repository.UserRepository;
+import com.hongdatchy.parkingspaceandbikeshare.repository.*;
 import com.hongdatchy.parkingspaceandbikeshare.sevice.SendEmailService;
 import com.hongdatchy.parkingspaceandbikeshare.sevice.UserService;
 import com.hongdatchy.parkingspaceandbikeshare.utils.Common;
 import com.hongdatchy.parkingspaceandbikeshare.utils.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * class impl UserService
@@ -52,7 +47,7 @@ public class UserServiceImpl implements UserService {
     MqttService mqttService;
 
     @Autowired
-    private SimpMessagingTemplate template;
+    PathRepository pathRepository;
 
 
 
@@ -131,5 +126,32 @@ public class UserServiceImpl implements UserService {
             mqttService.publish(rentBikeRequest.getBikeId(), "op");
         }
         return contractBike;
+    }
+
+    @Override
+    public ContractBikeResponse endRentBike(int bikeId, int userId) {
+
+        ContractBikeResponse contractBikeResponse = null;
+        List<ContractBike> contractBikeList = contractBikeRepository.findContractsBikeByBikeId(bikeId);
+        if(!contractBikeList.isEmpty()){
+            ContractBike contractBike = contractBikeList.get(contractBikeList.size()-1);
+            if(contractBike.getUserId()== userId){
+                contractBike.setEndTime(new Date());
+                contractBikeRepository.save(contractBike);
+                Path path = pathRepository.findPathsByContractId(contractBike.getId());
+                contractBikeResponse = ContractBikeResponse.builder()
+                        .id(contractBike.getId())
+                        .startTime(contractBike.getStartTime())
+                        .endTime(contractBike.getEndTime())
+                        .bikeId(contractBike.getBikeId())
+                        .paymentMethod(contractBike.getPaymentMethod())
+                        .userId(contractBike.getUserId())
+                        .distance(path.getDistance())
+                        .routes(path.getRoutes())
+                        .build();
+            }
+        }
+
+        return contractBikeResponse;
     }
 }

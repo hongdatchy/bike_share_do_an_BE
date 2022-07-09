@@ -1,5 +1,6 @@
 package com.hongdatchy.parkingspaceandbikeshare.entities.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -54,6 +55,7 @@ public class User {
     @Column(name = "ward_id")
     private Integer wardId;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+7")
     @Column(name = "last_time_access")
     private Date lastTimeAccess;
 
