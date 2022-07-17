@@ -46,6 +46,7 @@ public class MqttServiceImpl implements MqttService {
         MqttMessage message = new MqttMessage(mess.getBytes());
         message.setQos(qos);
         try {
+            System.out.println("[Server] topic: " + pubTopic + " message: " + message);
             client.publish(pubTopic, message);
         } catch (MqttException e) {
             e.printStackTrace();

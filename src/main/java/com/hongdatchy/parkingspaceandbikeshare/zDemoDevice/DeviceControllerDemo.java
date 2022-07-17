@@ -12,10 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * addition for demo device
  *
@@ -38,15 +34,14 @@ public class DeviceControllerDemo {
 
     @GetMapping("pushLatLngToServerByMqtt/{bikeId}")
     public void pushLatLngToServerByMqtt(@PathVariable int bikeId) throws InterruptedException {
-        List<String> messList = ConstantDemo.messList;
-        for (String mess: messList) {
-            mqttServiceDemo.publish(bikeId, "p," + mess);
+        for (String latLng: ConstantDemo.latLngDeMoList) {
+            mqttServiceDemo.publish(bikeId, "p," + latLng);
             Thread.sleep(3000);
         }
     }
 
     @GetMapping("closeLockToServerByMqtt/{bikeId}")
     public void closeLockToServerByMqtt(@PathVariable int bikeId) {
-        mqttServiceDemo.publish(bikeId, "cl");
+        mqttServiceDemo.publish(bikeId, "cl temp");
     }
 }

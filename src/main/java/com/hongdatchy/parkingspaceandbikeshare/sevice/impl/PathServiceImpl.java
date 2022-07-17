@@ -53,9 +53,9 @@ public class PathServiceImpl implements PathService {
                     .build());
         } else {
             List<Coordinate> coordinates = new Gson().fromJson(path.getRoutes(), new TypeToken<List<Coordinate>>(){}.getType());
-            double latPre = coordinates.get(coordinates.size()-1).getLatitude();
-            double longPre = coordinates.get(coordinates.size()-1).getLongitude();
-            double addDistance = Common.calculateDistance(latPre , longPre , latitude , longitude);
+            double latPre = coordinates.get(coordinates.size()-1).getLat();
+            double longPre = coordinates.get(coordinates.size()-1).getLng();
+            double addDistance = Common.calculateDistance(latPre , longPre , latitude , longitude)/1000;
             path.setDistance(path.getDistance() + addDistance);
             coordinates.add(new Coordinate(latitude, longitude));
             path.setRoutes(new Gson().toJson(coordinates));

@@ -39,5 +39,9 @@ public class Constant {
     public static final boolean CLOSE_STATUS_DEVICE = false;
     public static final boolean OPEN_STATUS_DEVICE = true;
 
+//    public static final String CHECK_END_RENT_BIKE_MESSAGE = "Bạn có muốn kết thúc chuyến đi không";
+//    public static final String OPEN_LOCK_SUCCESS_TO_CONTINUE_MESSAGE = "Đã mở khoá xe thành công để tiếp tục";
+//    public static final String END_SUCCESS_MESSAGE = "Kết thúc chuyến đi thành công";
 
+    public static final int MAX_DISTANCE_BETWEEN_BIKE_AND_STATION = 10;
 }

@@ -5,6 +5,7 @@
 package com.hongdatchy.parkingspaceandbikeshare.sevice;
 
 import com.hongdatchy.parkingspaceandbikeshare.entities.model.Station;
+import com.hongdatchy.parkingspaceandbikeshare.entities.response.StationResponse;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ import java.util.List;
  * @author hongdatchy
  */
 public interface StationService {
-
+    List<StationResponse> findAllStation();
 }

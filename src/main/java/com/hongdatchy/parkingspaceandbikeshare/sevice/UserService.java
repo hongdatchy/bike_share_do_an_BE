@@ -9,6 +9,8 @@ import com.hongdatchy.parkingspaceandbikeshare.entities.request.RegisterForm;
 import com.hongdatchy.parkingspaceandbikeshare.entities.request.RentBikeRequest;
 import com.hongdatchy.parkingspaceandbikeshare.entities.response.ContractBikeResponse;
 
+import java.util.List;
+
 /**
  *
  *
@@ -35,7 +37,7 @@ public interface UserService {
     boolean activeAccount(String code);
 
     /**
-     * thự hiện xử lý hành động thuể xe
+     * thự hiện xử lý hành động thuê xe
      *
      * @param rentBikeRequest nội dung bản tin thuê xe gửi lên từ client
      * @param userId id cuả người thuê xe
@@ -44,11 +46,22 @@ public interface UserService {
     ContractBike rentBike(RentBikeRequest rentBikeRequest, int userId);
 
     /**
-     * thự hiện xử lý hành động thuể xe
+     * thực hiện tiếp tực thuê xe
      *
-     * @param bikeId contract (cuối cùng trong DB) tương ứng với bikeId cần kết thúc
+     * @param bikeId id của bike cần tiếp tuc thuê
+     * @param userId id cuả người thuê xe
+     * @return true nếu thành công, false nếu thất bại
+     */
+    boolean continueRentBike(int bikeId, int userId);
+
+    /**
+     * thự hiện xử lý hành động kết thúc thuê xe
+     *
+     * @param bikeId id của bike cần kết thúc thuê
      * @param userId id cuả người thuê xe
      * @return ContractBike nếu kết thúc thành công, null nếu thất bại
      */
     ContractBikeResponse endRentBike(int bikeId, int userId);
+
+
 }

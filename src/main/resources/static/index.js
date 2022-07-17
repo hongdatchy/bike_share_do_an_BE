@@ -136,9 +136,12 @@ function connectSocket() {
             let bikeId = messageBody.split(",")[0]
             let mes = messageBody.split(",")[1]
 
-            if(mes == "op"){
+            if(mes == "op" || mes == "op continue"){
                 getTag(bikeId).innerHTML =
                     `<img src="padlock_open.png" alt=""/>`
+            } else if(mes == "cl"){
+                getTag(bikeId).innerHTML =
+                    `<img src="padlock_lock.png" alt=""/>`
             }
         });
     });

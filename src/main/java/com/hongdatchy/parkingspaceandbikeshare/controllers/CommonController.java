@@ -13,6 +13,7 @@ import com.hongdatchy.parkingspaceandbikeshare.entities.response.MyResponse;
 import com.hongdatchy.parkingspaceandbikeshare.entities.response.UserResponse;
 import com.hongdatchy.parkingspaceandbikeshare.repository.*;
 import com.hongdatchy.parkingspaceandbikeshare.sevice.BikeService;
+import com.hongdatchy.parkingspaceandbikeshare.sevice.StationService;
 import com.hongdatchy.parkingspaceandbikeshare.sevice.UserService;
 import com.hongdatchy.parkingspaceandbikeshare.utils.Common;
 import com.hongdatchy.parkingspaceandbikeshare.utils.Constant;
@@ -55,7 +56,7 @@ public class CommonController {
     WardRepository wardRepository;
 
     @Autowired
-    StationRepository stationRepository;
+    StationService stationService;
 
     @Autowired
     BikeService bikeService;
@@ -146,7 +147,7 @@ public class CommonController {
 
     @GetMapping("station")
     public ResponseEntity<Object> findAllStation() {
-        return ResponseEntity.ok(MyResponse.success(stationRepository.findAll()));
+        return ResponseEntity.ok(MyResponse.success(stationService.findAllStation()));
     }
 
 

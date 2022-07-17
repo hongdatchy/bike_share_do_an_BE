@@ -109,7 +109,7 @@ public class Common {
     }
 
     /**
-     * tính khoảng các 2 điểm A và B
+     * tính khoảng các 2 điểm A và B theo mét
      *
      * @param lat1 lat điểm A
      * @param lng1 long điểm A
@@ -118,7 +118,7 @@ public class Common {
      * @return khoảng cách 2 điểm
      */
     public static double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
-        double earthRadius = 6371; //meters
+        double earthRadius = 6371000; //meters
         double dLat = Math.toRadians(lat2-lat1);
         double dLng = Math.toRadians(lng2-lng1);
         double a = Math.sin(dLat/2) * Math.sin(dLat/2) +

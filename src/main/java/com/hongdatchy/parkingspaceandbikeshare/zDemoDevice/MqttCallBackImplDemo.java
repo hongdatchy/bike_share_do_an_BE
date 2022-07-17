@@ -21,31 +21,43 @@ public class MqttCallBackImplDemo implements MqttCallback {
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
 
-    @Override
-    public void connectionLost(Throwable cause) {
-        System.out.println("disconnect demo");
-    }
+
 
     @Override
     public void messageArrived(String topic, MqttMessage message)  {
         String mess = new String(message.getPayload());
-        System.out.println("Received message topic demo: " + topic);
-        System.out.println("Received message content demo: " + mess);
         // lấy bikeId từ topic
         String[] topicSplit = topic.split("/");
         int bikeId = Integer.parseInt(topicSplit[topicSplit.length-1]);
         // bản tin yêu cầu mở khoá từ server
         if(mess.equals("op")){
             // gửi bản tin thông báo lên web để hiển thị mở khoá (tương ứng với việc mở khoá thật ở device)
-            simpMessagingTemplate.convertAndSend("/topic/messages/" , bikeId + ","+message);
+            simpMessagingTemplate.convertAndSend("/topic/messages/" , bikeId + ","+mess);
             // sau đó gửi bản tin lên server thông báo đã mở khoá thành công
             mqttServiceDemo.publish(bikeId, "op success");
 
+        }else if(mess.equals("op continue")){
+            // gửi bản tin thông báo lên web để hiển thị mở khoá (tương ứng với việc mở khoá thật ở device)
+            simpMessagingTemplate.convertAndSend("/topic/messages/" , bikeId + ","+mess);
+            // sau đó gửi bản tin lên server thông báo đã mở khoá thành công
+            mqttServiceDemo.publish(bikeId, "op continue success");
+        } else if(mess.equals("cl")){
+
+            // sau đó gửi bản tin lên server thông báo đã mở khoá thành công
+            mqttServiceDemo.publish(bikeId, "cl success");
         }
     }
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
-        System.out.println("deliveryComplete demo --------- " + token.isComplete());
+        if(!token.isComplete()){
+            System.out.println("Gửi bản tin MQTT từ device thất bại");
+        }
     }
+
+    @Override
+    public void connectionLost(Throwable cause) {
+        System.out.println("disconnect MQTT demo");
+    }
+
 }

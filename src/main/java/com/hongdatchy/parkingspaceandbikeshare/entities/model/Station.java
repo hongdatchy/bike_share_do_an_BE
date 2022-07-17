@@ -20,9 +20,6 @@ public class Station {
     @Column(name = "slot_quantity", nullable = false)
     private Integer slotQuantity;
 
-    @Column(name = "current_number_car", nullable = false)
-    private Integer currentNumberCar;
-
     @Column(name = "location", nullable = false)
     private String location;
 
