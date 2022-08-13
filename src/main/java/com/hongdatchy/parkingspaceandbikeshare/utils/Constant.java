@@ -32,9 +32,12 @@ public class Constant {
     public static final String REGISTER_RESULT_FAIL_2 = "Email đã tồn tại";
     public static final String REGISTER_RESULT_FAIL_3 = "Email không đúng";
 
-    public static final String URL_BROKER_MQTT = "tcp://localhost:1883";
-    public static final String USERNAME_MQTT = "hongdatchy";
-    public static final String PASSWORD_MQTT = "hongdat10";
+//    public static final String URL_BROKER_MQTT = "tcp://localhost:1883";
+//    public static final String USERNAME_MQTT = "hongdatchy";
+//    public static final String PASSWORD_MQTT = "hongdat10";
+    public static final String URL_BROKER_MQTT = "tcp://155.248.164.224:1883";
+    public static final String USERNAME_MQTT = "sanslab";
+    public static final String PASSWORD_MQTT = "1";
 
     public static final boolean CLOSE_STATUS_DEVICE = false;
     public static final boolean OPEN_STATUS_DEVICE = true;

@@ -46,11 +46,12 @@ public class SendEmailServiceImpl implements SendEmailService {
             System.out.println("sending email...");
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-            String htmlMsg =    "<h3>welcome to Bike Share system!</h3>" +
-                    "<p>Someone registered a account in our system with this email. Info account: </p>" +
+            String htmlMsg =    "<h3>Chào mừng đến với hệ thống Bike Share!</h3>" +
+                    "<p>Ai đó đã đănng kí tài khoản với email này. Thông tin tài khoản: </p>" +
                     "<p>username: " + registerForm.getEmail() + "</p>"+
                     "<p>password: " + registerForm.getPassword() + "</p>"+
-                    "<p>If that is you, please put this code in to Bike Share app to active your account: " + activeCode +"</p>";
+                    "<p>Nếu đó là bạn, xin hãy nhập mã code này vào ứng dụng Bike Share để kích hoạt tài khoản: "
+                    + activeCode +"</p>";
             helper.setText(htmlMsg, true);
             helper.setTo(userMail);
             helper.setSubject(header);

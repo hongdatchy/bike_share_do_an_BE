@@ -79,7 +79,7 @@ function render(){
                     <td>battery</td>
                     <td>QR code</td>
                     <td>Status Lock</td>
-                    <td>Device đẩy toạ độ bằng MQTT</td>
+                    <td>Đẩy toạ độ</td>
                     <td>Đóng khoá</td>
                 </tr>`)
     document.getElementById("list_bike_info").innerHTML = listBikeInfoTrTag.join('')
