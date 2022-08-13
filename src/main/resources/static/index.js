@@ -52,9 +52,10 @@ async function fetchDelete(url, token = null) {
 
 async function loadAllBikeInfo(){
     // return await fetchGet("http://localhost:8080/api/common/findAllBikeInfoForDeMo")
-    return await fetchGet("http://155.248.164.224:8181/api/common/findAllBikeInfoForDeMo")
+    return await fetchGet(url_be + "/api/common/findAllBikeInfoForDeMo")
 }
 
+const url_be = "http://155.248.164.224:8181"
 
 let listBikeInfo
 
@@ -96,13 +97,13 @@ loadAllBikeInfo().then(rs => {
 })
 
 function onClickPushLatLngByMQTTButton(bikeId){
-    fetchGet("http://localhost:8080/api/common/pushLatLngToServerByMqtt/" + bikeId, "", false).then(r => {})
+    fetchGet(url_be + "/api/common/pushLatLngToServerByMqtt/" + bikeId, "", false).then(r => {})
 }
 
 function onClickCloseLock(bikeId, index){
     listBikeInfo[index].statusLock = false;
     render()
-    fetchGet("http://localhost:8080/api/common/closeLockToServerByMqtt/" + bikeId, "", false).then(r => {})
+    fetchGet(url_be + "/api/common/closeLockToServerByMqtt/" + bikeId, "", false).then(r => {})
 }
 
 
